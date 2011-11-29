@@ -5,7 +5,6 @@
 (defn- port-available [port]
    (try
      (java.net.ServerSocket. port)
-     (java.net.DatagramSocket. port)
      true
      (catch java.io.IOException e false)
      )
