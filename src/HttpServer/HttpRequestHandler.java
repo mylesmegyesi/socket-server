@@ -1,5 +1,8 @@
 package HttpServer;
 
+/**
+ * Author: Myles Megyesi
+ */
 public interface HttpRequestHandler {
 
     public boolean canHandle(HttpRequest request);

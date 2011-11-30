@@ -15,6 +15,9 @@ import java.util.logging.StreamHandler;
 
 import static org.junit.Assert.*;
 
+/**
+ * Author: Myles Megyesi
+ */
 public class HttpServerTest {
 
     HttpServer server = null;

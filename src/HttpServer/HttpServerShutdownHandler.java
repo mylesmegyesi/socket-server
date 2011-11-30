@@ -1,5 +1,8 @@
 package HttpServer;
 
+/**
+ * Author: Myles Megyesi
+ */
 public class HttpServerShutdownHandler extends Thread {
 
     private HttpServer server = null;

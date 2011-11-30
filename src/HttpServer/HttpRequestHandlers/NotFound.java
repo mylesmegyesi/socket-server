@@ -3,7 +3,9 @@ package HttpServer.HttpRequestHandlers;
 import HttpServer.HttpRequest;
 import HttpServer.HttpRequestHandler;
 
-
+/**
+ * Author: Myles Megyesi
+ */
 public class NotFound implements HttpRequestHandler {
     public boolean canHandle(HttpRequest request) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.

@@ -4,6 +4,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ * Author: Myles Megyesi
+ */
 public class HttpRequest {
 
     protected HttpRequest() {

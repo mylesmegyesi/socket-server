@@ -3,6 +3,9 @@ package HttpServer.Mocks;
 import HttpServer.HttpRequest;
 import HttpServer.HttpRequestHandler;
 
+/**
+ * Author: Myles Megyesi
+ */
 public class HttpRequestHandlerMock implements HttpRequestHandler {
 
     public HttpRequestHandlerMock(boolean canHandle) {

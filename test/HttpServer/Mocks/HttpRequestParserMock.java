@@ -5,6 +5,9 @@ import HttpServer.HttpRequestParser;
 
 import java.io.InputStream;
 
+/**
+ * Author: Myles Megyesi
+ */
 public class HttpRequestParserMock extends HttpRequestParser {
 
     @Override

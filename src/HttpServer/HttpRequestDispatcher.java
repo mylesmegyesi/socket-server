@@ -2,7 +2,6 @@ package HttpServer;
 
 
 import HttpServer.Exceptions.BadRequestException;
-import HttpServer.Exceptions.InvalidUriException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +9,9 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Author: Myles Megyesi
+ */
 public class HttpRequestDispatcher implements Runnable {
 
     protected HttpRequestDispatcher() {
@@ -63,30 +65,4 @@ public class HttpRequestDispatcher implements Runnable {
     private List<HttpRequestHandler> requestHandlers;
     private HttpRequestHandler defaultHandler;
     private Logger logger;
-
-    //String request = "";
-//        try {
-//            request = inputStreamToString(socket.getInputStream());
-//        } catch (IOException e) {
-//            // report bad request
-//        }
-//        this.logger.info("Received Request");
-//        PrintWriter out = null;
-//        try {
-//            out = new PrintWriter(socket.getOutputStream());
-//            out.println(request);
-//        } catch (IOException e) {
-//            //this.logger.severe(e.toString());
-//        } finally {
-//            // The output stream must be closed before the socket gets closed
-//            if (out != null) {
-//                out.close();
-//            }
-//            try {
-//                if (this.socket != null) {
-//                    this.socket.close();
-//                }
-//            } catch (IOException e) {
-//            }
-//        }
 }

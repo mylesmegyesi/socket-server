@@ -12,6 +12,9 @@ import java.util.logging.StreamHandler;
 
 import static junit.framework.Assert.assertEquals;
 
+/**
+ * Author: Myles Megyesi
+ */
 public class HttpRequestDispatcherTest {
 
     HttpRequestDispatcher requestDispatcher = null;

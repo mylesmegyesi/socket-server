@@ -8,6 +8,9 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Author: Myles Megyesi
+ */
 public class HttpRequestDispatcherMock extends HttpRequestDispatcher {
 
     public static int getCalledCount() {

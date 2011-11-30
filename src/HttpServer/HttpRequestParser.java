@@ -1,7 +1,6 @@
 package HttpServer;
 
 import HttpServer.Exceptions.BadRequestException;
-import HttpServer.Exceptions.InvalidUriException;
 
 import java.io.*;
 import java.net.URI;

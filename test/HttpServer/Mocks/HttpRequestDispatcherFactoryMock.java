@@ -10,11 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mylesmegyesi
- * Date: 11/30/11
- * Time: 10:59 AM
- * To change this template use File | Settings | File Templates.
+ * Author: Myles Megyesi
  */
 public class HttpRequestDispatcherFactoryMock extends HttpRequestDispatcherFactory {
 
