@@ -1,8 +1,10 @@
 package HttpServer;
 
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class HttpRequestDispatcher implements Runnable {
@@ -11,52 +13,68 @@ public class HttpRequestDispatcher implements Runnable {
 
     }
 
-    public HttpRequestDispatcher(Socket socket, Logger logger) {
+    public HttpRequestDispatcher(Socket socket, HttpRequestParser requestParser, List<HttpRequestHandler> requestHandlers, HttpRequestHandler defaultHandler, Logger logger) {
         this.socket = socket;
+        this.requestParser = requestParser;
+        this.requestHandlers = requestHandlers;
+        this.defaultHandler = defaultHandler;
         this.logger = logger;
     }
 
-    public void run() {
-        String request = "";
-        try {
-            request = inputStreamToString(socket.getInputStream());
-        } catch (IOException e) {
-            // report bad request
-        }
-        this.logger.info("Received Request");
-        PrintWriter out = null;
-        try {
-            out = new PrintWriter(socket.getOutputStream());
-            out.println(request);
-        } catch (IOException e) {
-            //this.logger.severe(e.toString());
-        } finally {
-            // The output stream must be closed before the socket gets closed
-            if (out != null) {
-                out.close();
-            }
-            try {
-                if (this.socket != null) {
-                    this.socket.close();
-                }
-            } catch (IOException e) {
-            }
-        }
-
+    public void addHandler(HttpRequestHandler requestHandler) {
+        this.requestHandlers.add(requestHandler);
     }
 
-    private String inputStreamToString(InputStream input) throws IOException {
-        StringBuffer buffer = new StringBuffer();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-        if (!reader.ready()) {
-            buffer.append((char) reader.read());
+    public void run() {
+        InputStream inputStream;
+        try {
+            inputStream = this.socket.getInputStream();
+        } catch (IOException e) {
+            this.logger.severe("Could not open the input stream of the socket.");
+            return;
         }
-        while (reader.ready()) {
-            buffer.append((char) reader.read());
+        HttpRequest request = this.requestParser.parse(inputStream);
+        boolean handled = false;
+        for (HttpRequestHandler requestHandler : this.requestHandlers) {
+            if (requestHandler.canHandle(request)) {
+                requestHandler.handle(request);
+                handled = true;
+            }
         }
-        return buffer.toString();
+        if (!handled) {
+            defaultHandler.handle(new HttpRequest());
+        }
     }
 
     private Socket socket;
+    private HttpRequestParser requestParser;
+    private List<HttpRequestHandler> requestHandlers;
+    private HttpRequestHandler defaultHandler;
     private Logger logger;
+
+    //String request = "";
+//        try {
+//            request = inputStreamToString(socket.getInputStream());
+//        } catch (IOException e) {
+//            // report bad request
+//        }
+//        this.logger.info("Received Request");
+//        PrintWriter out = null;
+//        try {
+//            out = new PrintWriter(socket.getOutputStream());
+//            out.println(request);
+//        } catch (IOException e) {
+//            //this.logger.severe(e.toString());
+//        } finally {
+//            // The output stream must be closed before the socket gets closed
+//            if (out != null) {
+//                out.close();
+//            }
+//            try {
+//                if (this.socket != null) {
+//                    this.socket.close();
+//                }
+//            } catch (IOException e) {
+//            }
+//        }
 }

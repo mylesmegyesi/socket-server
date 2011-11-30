@@ -26,7 +26,7 @@ public class HttpServerTest {
         StreamHandler handler = new StreamHandler(System.out, new SimpleFormatter());
         handler.setLevel(Level.ALL);
         logger.addHandler(handler);
-        server = new HttpServer(logger, new HttpRequestDispatcherFactory());
+        server = new HttpServer(logger, new HttpRequestDispatcherFactory(), new HttpRequestParserFactory());
     }
 
     @org.junit.After
@@ -37,7 +37,7 @@ public class HttpServerTest {
     }
 
     @org.junit.Test
-    public void testThatStopDoesNotThrowAnExceptionIfCalledBeforeStart() throws Exception {
+    public void stopDoesNotThrowAnExceptionIfCalledBeforeStart() throws Exception {
         try {
             server.stopListening();
         } catch (Exception e) {
@@ -46,14 +46,14 @@ public class HttpServerTest {
     }
 
     @org.junit.Test
-    public void testThatThePortIsTakenAfterStartingTheServer() throws Exception {
+    public void serverPortIsTakenAfterStartingTheServer() throws Exception {
         server.start();
         waitForServerToStart(server);
         assertFalse("The port " + server.getPort() + " is available when it should not be.", isPortAvailable(server.getPort()));
     }
 
     @org.junit.Test
-    public void testThatThePortIsAvailableAfterTheServerIsStopped() throws Exception {
+    public void serverPortIsAvailableAfterTheServerIsStopped() throws Exception {
         server.start();
         waitForServerToStart(server);
         server.stopListening();
