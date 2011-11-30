@@ -1,6 +1,9 @@
 package HttpServer;
 
 
+import HttpServer.Exceptions.BadRequestException;
+import HttpServer.Exceptions.InvalidUriException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -33,7 +36,16 @@ public class HttpRequestDispatcher implements Runnable {
             this.logger.severe("Could not open the input stream of the socket.");
             return;
         }
-        HttpRequest request = this.requestParser.parse(inputStream);
+        HttpRequest request = null;
+        try {
+            request = this.requestParser.parse(inputStream);
+        } catch (IOException e) {
+            defaultHandler.handle(request);
+            return;
+        } catch (BadRequestException e) {
+            defaultHandler.handle(request);
+            return;
+        }
         boolean handled = false;
         for (HttpRequestHandler requestHandler : this.requestHandlers) {
             if (requestHandler.canHandle(request)) {
@@ -42,7 +54,7 @@ public class HttpRequestDispatcher implements Runnable {
             }
         }
         if (!handled) {
-            defaultHandler.handle(new HttpRequest());
+            defaultHandler.handle(request);
         }
     }
 

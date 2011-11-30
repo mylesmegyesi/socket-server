@@ -1,6 +1,6 @@
 package HttpServer;
 
-import HttpServer.HttpRequestHandlers.FileNotFound;
+import HttpServer.HttpRequestHandlers.NotFound;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -92,7 +92,7 @@ public class HttpServer extends Thread {
             this.setDispatcherPool(Executors.newCachedThreadPool());
             try {
                 Socket socket = this.serverSocket.accept();
-                this.getDispatcherPool().execute(this.getDispatcherFactory().create(socket, this.getParserFactory().create(), new ArrayList<HttpRequestHandler>(), new FileNotFound(), this.logger));
+                this.getDispatcherPool().execute(this.getDispatcherFactory().create(socket, this.getParserFactory().create(), new ArrayList<HttpRequestHandler>(), new NotFound(), this.logger));
             } catch (SocketException e) {
                 this.logger.info("Server stopped listening.");
             } catch (NullPointerException e) {
