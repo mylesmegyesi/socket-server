@@ -1,9 +1,6 @@
 package HttpServer.Mocks;
 
-import HttpServer.HttpRequestDispatcher;
-import HttpServer.HttpRequestDispatcherFactory;
-import HttpServer.HttpRequestHandler;
-import HttpServer.HttpRequestParser;
+import HttpServer.*;
 
 import java.net.Socket;
 import java.util.List;
@@ -15,8 +12,8 @@ import java.util.logging.Logger;
 public class HttpRequestDispatcherFactoryMock extends HttpRequestDispatcherFactory {
 
     @Override
-    public HttpRequestDispatcher create(Socket socket, HttpRequestParser requestParser, List<HttpRequestHandler> requestHandlers, HttpRequestHandler defaultHandler, Logger logger) {
-        return new HttpRequestDispatcherMock(socket, requestParser, requestHandlers, defaultHandler, logger);
+    public HttpRequestDispatcher create(Socket socket, HttpRequestParser requestParser, List<HttpRequestHandler> requestHandlers, HttpRequestHandler defaultHandler, HttpServerInfo serverInfo, Logger logger) {
+        return new HttpRequestDispatcherMock(socket, requestParser, requestHandlers, defaultHandler, serverInfo, logger);
     }
 
 }

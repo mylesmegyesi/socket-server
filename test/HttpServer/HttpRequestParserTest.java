@@ -69,7 +69,7 @@ public class HttpRequestParserTest {
         if (headers1.size() != headers2.size()) {
             return false;
         }
-        for (int i=0; i<headers1.size(); i++) {
+        for (int i = 0; i < headers1.size(); i++) {
             HttpRequestHeader header1 = headers1.get(i);
             HttpRequestHeader header2 = headers2.get(i);
             if ((!header1.getName().equals(header2.getName())) || (!header1.getValue().equals(header2.getValue()))) {
@@ -81,6 +81,7 @@ public class HttpRequestParserTest {
 
     private List<HttpRequestHeader> headersForFakePostRequest() {
         ArrayList<HttpRequestHeader> headers = new ArrayList<HttpRequestHeader>();
+        headers.add(new HttpRequestHeader("Host", "localhost:8080"));
         headers.add(new HttpRequestHeader("From", "frog@jmarshall.com"));
         headers.add(new HttpRequestHeader("User-Agent", "HTTPTool/1.0"));
         headers.add(new HttpRequestHeader("Content-Type", "application/x-www-form-urlencoded"));
@@ -94,6 +95,7 @@ public class HttpRequestParserTest {
 
     private String fakePostRequest() {
         return "POST /path/script.cgi HTTP/1.0\n" +
+                "Host: localhost:8080\n" +
                 "From: frog@jmarshall.com\n" +
                 "User-Agent: HTTPTool/1.0\n" +
                 "Content-Type: application/x-www-form-urlencoded\n" +

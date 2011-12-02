@@ -5,13 +5,25 @@ package HttpServer;
  */
 public class HttpResponseHeader {
 
-    private HttpResponseHeader(String name, String value) {
+    public HttpResponseHeader(String name, String value) {
         this.name = name;
         this.value = value;
     }
 
-    public String toString() {
-        return this.name;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     private String name;

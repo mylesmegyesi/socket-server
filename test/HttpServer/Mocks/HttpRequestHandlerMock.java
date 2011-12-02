@@ -1,14 +1,18 @@
 package HttpServer.Mocks;
 
 import HttpServer.HttpRequest;
-import HttpServer.HttpRequestHandler;
+import HttpServer.HttpResponse;
+import HttpServer.HttpServerInfo;
+
+import java.util.logging.Logger;
 
 /**
  * Author: Myles Megyesi
  */
-public class HttpRequestHandlerMock implements HttpRequestHandler {
+public class HttpRequestHandlerMock extends HttpRequestHandlerBaseMock {
 
-    public HttpRequestHandlerMock(boolean canHandle) {
+    public HttpRequestHandlerMock(boolean canHandle, Logger logger) {
+        super(logger);
         this.canHandle = canHandle;
     }
 
@@ -16,8 +20,9 @@ public class HttpRequestHandlerMock implements HttpRequestHandler {
         return this.canHandle;
     }
 
-    public void handle(HttpRequest request) {
+    public HttpResponse getResponse(HttpRequest request, HttpServerInfo serverInfo) {
         this.handleCalledCount++;
+        return new HttpResponseMock();
     }
 
     public int getHandleCalledCount() {

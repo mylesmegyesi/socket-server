@@ -2,6 +2,7 @@ package HttpServer;
 
 import HttpServer.Mocks.HttpRequestDispatcherFactoryMock;
 import HttpServer.Mocks.HttpRequestDispatcherMock;
+import HttpServer.Utility.Logging;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,8 +11,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 
 import static org.junit.Assert.*;
 
@@ -24,12 +23,8 @@ public class HttpServerTest {
 
     @org.junit.Before
     public void setUp() throws Exception {
-        Logger logger = Logger.getLogger("HttpServer");
-        logger.setLevel(Level.OFF);
-        StreamHandler handler = new StreamHandler(System.out, new SimpleFormatter());
-        handler.setLevel(Level.ALL);
-        logger.addHandler(handler);
-        server = new HttpServer(logger, new HttpRequestDispatcherFactory(), new HttpRequestParserFactory());
+        Logger logger = Logging.getLoggerAndSetHandler(HttpServerTest.class.getName(), Level.SEVERE);
+        server = new HttpServer(new HttpRequestDispatcherFactory(), new HttpRequestParserFactory(), logger);
     }
 
     @org.junit.After
@@ -50,23 +45,20 @@ public class HttpServerTest {
 
     @org.junit.Test
     public void serverPortIsTakenAfterStartingTheServer() throws Exception {
-        server.start();
-        waitForServerToStart(server);
+        server.startListeningInBackground();
         assertFalse("The port " + server.getPort() + " is available when it should not be.", isPortAvailable(server.getPort()));
     }
 
     @org.junit.Test
     public void serverPortIsAvailableAfterTheServerIsStopped() throws Exception {
-        server.start();
-        waitForServerToStart(server);
+        server.startListeningInBackground();
         server.stopListening();
         assertTrue("The port " + server.getPort() + " is not available when it should be.", isPortAvailable(server.getPort()));
     }
 
     @org.junit.Test
     public void serverCallsTheDispatcherAfterReceivingARequest() throws Exception {
-        server.start();
-        waitForServerToStart(server);
+        server.startListeningInBackground();
         server.setDispatcherFactory(new HttpRequestDispatcherFactoryMock());
         sendRequest(server.getPort());
         server.stopListening();
@@ -75,17 +67,11 @@ public class HttpServerTest {
 
     @org.junit.Test
     public void serverDoesNotCallTheDispatcherAfterStopping() throws Exception {
-        server.start();
-        waitForServerToStart(server);
+        server.startListeningInBackground();
         server.setDispatcherFactory(new HttpRequestDispatcherFactoryMock());
         server.stopListening();
         sendRequest(server.getPort());
         assertEquals("The dispatcher was called.", 0, HttpRequestDispatcherMock.getCalledCount());
-    }
-
-    private void waitForServerToStart(HttpServer server) {
-        while (!server.serverIsListening()) {
-        }
     }
 
     private boolean isPortAvailable(int port) {

@@ -2,9 +2,10 @@ package HttpServer;
 
 import HttpServer.Exceptions.BadRequestException;
 
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,16 +19,21 @@ public class HttpRequestParser {
 
     }
 
-    public HttpRequest parse(InputStream inputStream) throws IOException, BadRequestException {
-        String rawRequest = inputStreamToString(inputStream);
+    public HttpRequest parse(InputStream inputStream) throws BadRequestException {
+        String rawRequest = null;
+        try {
+            rawRequest = inputStreamToString(inputStream);
+        } catch (IOException e) {
+            throw new BadRequestException(e.getMessage());
+        }
         Scanner scanner = new Scanner(rawRequest);
         String firstLine = scanner.nextLine();
         String[] requestItems = firstLine.split(" ");
         if (requestItems.length != 3) {
-            throw new BadRequestException();
+            throw new BadRequestException(String.format("Improperly formatted request line: %s", firstLine));
         }
         String action = requestItems[0].trim();
-        String requestUri =  requestItems[1].trim();
+        String requestUri = requestItems[1].trim();
         String protocol = requestItems[2].trim();
         List<HttpRequestHeader> requestHeaders = new ArrayList<HttpRequestHeader>();
         while (scanner.hasNextLine()) {
@@ -45,11 +51,13 @@ public class HttpRequestParser {
     }
 
     private HttpRequestHeader parseHeader(String headerLine) throws BadRequestException {
-        String[] headerItems = headerLine.split(":");
-        if (headerItems.length != 2) {
-            throw new BadRequestException();
+        int colonIndex = headerLine.indexOf(':');
+        String name = headerLine.substring(0, colonIndex).trim();
+        String value = headerLine.substring(colonIndex + 1, headerLine.length()).trim();
+        if (name == null || value == null) {
+            throw new BadRequestException(String.format("Improperly formatted header: %s", headerLine));
         }
-        return new HttpRequestHeader(headerItems[0].trim(), headerItems[1].trim());
+        return new HttpRequestHeader(name, value);
     }
 
     private String inputStreamToString(InputStream input) throws IOException {

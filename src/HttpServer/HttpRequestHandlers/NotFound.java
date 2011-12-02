@@ -1,17 +1,24 @@
 package HttpServer.HttpRequestHandlers;
 
-import HttpServer.HttpRequest;
-import HttpServer.HttpRequestHandler;
+import HttpServer.*;
+
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Author: Myles Megyesi
  */
-public class NotFound implements HttpRequestHandler {
-    public boolean canHandle(HttpRequest request) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+public class NotFound extends HttpRequestHandler {
+
+    public NotFound(Logger logger) {
+        super(logger);
     }
 
-    public void handle(HttpRequest request) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public boolean canHandle(HttpRequest request) {
+        return true;
+    }
+
+    public HttpResponse getResponse(HttpRequest request, HttpServerInfo serverInfo) {
+        return new HttpResponse("HTTP/1.1", 404, "Not Found", new ArrayList<HttpResponseHeader>(), null);
     }
 }

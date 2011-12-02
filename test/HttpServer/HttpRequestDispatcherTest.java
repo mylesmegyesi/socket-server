@@ -3,12 +3,11 @@ package HttpServer;
 import HttpServer.Mocks.HttpRequestHandlerMock;
 import HttpServer.Mocks.HttpRequestParserMock;
 import HttpServer.Mocks.SocketMock;
+import HttpServer.Utility.Logging;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -20,17 +19,14 @@ public class HttpRequestDispatcherTest {
     HttpRequestDispatcher requestDispatcher = null;
     HttpRequestHandlerMock defaultRequestHandler = null;
     HttpRequestParserMock requestParserMock = null;
+    Logger logger;
 
     @org.junit.Before
     public void setUp() throws Exception {
-        Logger logger = Logger.getLogger("HttpServer");
-        logger.setLevel(Level.OFF);
-        StreamHandler handler = new StreamHandler(System.out, new SimpleFormatter());
-        handler.setLevel(Level.ALL);
-        logger.addHandler(handler);
-        defaultRequestHandler = new HttpRequestHandlerMock(true);
-        requestParserMock = new HttpRequestParserMock();
-        requestDispatcher = new HttpRequestDispatcher(new SocketMock(), requestParserMock, new ArrayList<HttpRequestHandler>(), defaultRequestHandler, logger);
+        this.logger = Logging.getLoggerAndSetHandler(this.getClass().getName(), Level.SEVERE);
+        this.defaultRequestHandler = new HttpRequestHandlerMock(true, this.logger);
+        this.requestParserMock = new HttpRequestParserMock();
+        this.requestDispatcher = new HttpRequestDispatcher(new SocketMock(), this.requestParserMock, new ArrayList<HttpRequestHandler>(), this.defaultRequestHandler, new HttpServerInfo(), this.logger);
     }
 
     @org.junit.After
@@ -56,7 +52,7 @@ public class HttpRequestDispatcherTest {
 
     @org.junit.Test
     public void callsTheHandlerGiven() throws Exception {
-        HttpRequestHandlerMock requestHandlerMock = new HttpRequestHandlerMock(true);
+        HttpRequestHandlerMock requestHandlerMock = new HttpRequestHandlerMock(true, logger);
         this.requestDispatcher.addHandler(requestHandlerMock);
         Thread thread = new Thread(requestDispatcher);
         thread.start();
@@ -66,8 +62,8 @@ public class HttpRequestDispatcherTest {
 
     @org.junit.Test
     public void callsTheSecondHandlerGiven() throws Exception {
-        HttpRequestHandlerMock cantHandleRequestHandler = new HttpRequestHandlerMock(false);
-        HttpRequestHandlerMock canHandleRequestHandler = new HttpRequestHandlerMock(true);
+        HttpRequestHandlerMock cantHandleRequestHandler = new HttpRequestHandlerMock(false, this.logger);
+        HttpRequestHandlerMock canHandleRequestHandler = new HttpRequestHandlerMock(true, this.logger);
         this.requestDispatcher.addHandler(canHandleRequestHandler);
         this.requestDispatcher.addHandler(cantHandleRequestHandler);
         Thread thread = new Thread(requestDispatcher);

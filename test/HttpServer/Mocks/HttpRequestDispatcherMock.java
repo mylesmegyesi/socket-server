@@ -3,6 +3,7 @@ package HttpServer.Mocks;
 import HttpServer.HttpRequestDispatcher;
 import HttpServer.HttpRequestHandler;
 import HttpServer.HttpRequestParser;
+import HttpServer.HttpServerInfo;
 
 import java.net.Socket;
 import java.util.List;
@@ -23,7 +24,7 @@ public class HttpRequestDispatcherMock extends HttpRequestDispatcher {
 
     private static int calledCount = 0;
 
-    public HttpRequestDispatcherMock(Socket socket, HttpRequestParser requestParser, List<HttpRequestHandler> requestHandlers, HttpRequestHandler defaultHandler, Logger logger) {
+    public HttpRequestDispatcherMock(Socket socket, HttpRequestParser requestParser, List<HttpRequestHandler> requestHandlers, HttpRequestHandler defaultHandler, HttpServerInfo serverInfo, Logger logger) {
 
     }
 
