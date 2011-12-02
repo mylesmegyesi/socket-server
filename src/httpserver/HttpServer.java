@@ -1,5 +1,6 @@
 package HttpServer;
 
+import HttpServer.HttpRequestHandlers.Directory;
 import HttpServer.HttpRequestHandlers.File;
 import HttpServer.HttpRequestHandlers.NotFound;
 import HttpServer.Utility.FileInformation;
@@ -92,6 +93,7 @@ public class HttpServer {
     public static void main(String[] args) {
         Logger logger = Logging.getLoggerAndSetHandler(HttpServer.class.getName(), Level.ALL);
         HttpServer server = new HttpServer(new HttpRequestDispatcherFactory(), new HttpRequestParserFactory(), logger);
+        server.addRequestHandler(new Directory(server.getDirectory(), new FileInformation(), logger));
         server.addRequestHandler(new File(server.getDirectory(), new FileInformation(), logger));
         Runtime.getRuntime().addShutdownHook(new HttpServerShutdownHandler(server));
         server.startListening();
@@ -264,7 +266,7 @@ public class HttpServer {
         }
     }
 
-    private String directory = ".";
+    private String directory = "public";
     private final Object directoryLock = new Object();
     private int port = 8080;
     private final Object portLock = new Object();

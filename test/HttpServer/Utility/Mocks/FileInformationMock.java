@@ -8,8 +8,13 @@ import HttpServer.Utility.FileInformation;
 public class FileInformationMock extends FileInformation {
 
     @Override
-    public boolean FileExists(String directory, String file) {
+    public boolean fileExists(String directory, String file) {
         return this.isFileExists();
+    }
+
+    @Override
+    public boolean directoryExists(String directoryServing, String directory) {
+        return this.isDirectoryExists();
     }
 
     public boolean isFileExists() {
@@ -20,5 +25,14 @@ public class FileInformationMock extends FileInformation {
         this.fileExists = fileExists;
     }
 
+    public boolean isDirectoryExists() {
+        return directoryExists;
+    }
+
+    public void setDirectoryExists(boolean directoryExists) {
+        this.directoryExists = directoryExists;
+    }
+
     private boolean fileExists = false;
+    private boolean directoryExists = false;
 }

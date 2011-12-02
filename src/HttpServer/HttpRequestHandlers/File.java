@@ -1,12 +1,13 @@
 package HttpServer.HttpRequestHandlers;
 
+import HttpServer.Exceptions.ResponseException;
 import HttpServer.*;
 import HttpServer.Utility.FileInformation;
 
+import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 import java.util.logging.Logger;
 
 /**
@@ -33,39 +34,32 @@ public class File extends HttpRequestHandler {
         if (!request.getAction().equals("GET")) {
             return false;
         }
-        return fileInfo.FileExists(this.directoryToServe, request.getRequestUri());
+        return fileInfo.fileExists(this.directoryToServe, request.getRequestUri());
     }
 
     @Override
-    protected HttpResponse getResponse(HttpRequest request, HttpServerInfo serverInfo) {
+    protected HttpResponse getResponse(HttpRequest request, HttpServerInfo serverInfo) throws ResponseException {
+        HttpResponse response = new HttpResponse("HTTP/1.1", 200, "OK", new ArrayList<HttpResponseHeader>(), null);
         java.io.File fileToServe = new java.io.File(this.directoryToServe, request.getRequestUri());
-        InputStream inputStream = null;
-        try {
-            inputStream = new BufferedInputStream(new FileInputStream(fileToServe));
-        } catch (FileNotFoundException e) {
-        }
-        String mimeType = null;
-        try {
-            mimeType = URLConnection.guessContentTypeFromStream(inputStream);
-        } catch (IOException e) {
-        }
-        List<HttpResponseHeader> responseHeaders = new ArrayList<HttpResponseHeader>();
-        responseHeaders.add(new HttpResponseHeader("Content-Type", mimeType));
+        String mimeType = new MimetypesFileTypeMap().getContentType(fileToServe.getName());
+        response.addResponseHeader(new HttpResponseHeader("Content-Type", mimeType));
+        response.addResponseHeader(new HttpResponseHeader("Last-Modified", response.getFormattedDate(new Date(fileToServe.lastModified()))));
         FileReader reader = null;
         try {
             reader = new FileReader(fileToServe);
         } catch (FileNotFoundException e) {
+            throw new ResponseException(e.getMessage());
         }
         StringBuilder builder = new StringBuilder();
         try {
-            if (reader != null) {
-                while (reader.ready()) {
-                    builder.append((char) reader.read());
-                }
+            while (reader.ready()) {
+                builder.append((char) reader.read());
             }
         } catch (IOException e) {
+            throw new ResponseException(e.getMessage());
         }
-        return new HttpResponse("HTTP/1.1", 200, "OK", responseHeaders, builder.toString());
+        response.setBody(builder.toString());
+        return response;
     }
 
     private FileInformation fileInfo;

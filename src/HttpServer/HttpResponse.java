@@ -40,7 +40,7 @@ public class HttpResponse {
         return builder;
     }
 
-    public StringBuilder buildHeaders(StringBuilder builder) {
+    public void buildHeaders(StringBuilder builder) {
         this.buildDateHeader(builder);
         for (HttpResponseHeader header : this.responseHeaders) {
             builder.append(header.getName());
@@ -53,25 +53,26 @@ public class HttpResponse {
             builder.append(this.body.length());
             builder.append("\r\n");
         }
-        return builder;
     }
 
-    public StringBuilder buildDateHeader(StringBuilder builder) {
-        DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+    public void buildDateHeader(StringBuilder builder) {
         Date date = new Date();
         builder.append("Date: ");
-        builder.append(dateFormat.format(date));
+        builder.append(this.getFormattedDate(date));
         builder.append("\r\n");
-        return builder;
     }
 
-    public StringBuilder buildBody(StringBuilder builder) {
+    public String getFormattedDate(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        return dateFormat.format(date);
+    }
+
+    public void buildBody(StringBuilder builder) {
         if (body != null && body.length() > 0) {
             builder.append("\r\n");
             builder.append(this.body);
             builder.append("\r\n");
         }
-        return builder;
     }
 
     public String getProtocolVersion() {
@@ -100,6 +101,10 @@ public class HttpResponse {
 
     public List<HttpResponseHeader> getResponseHeaders() {
         return responseHeaders;
+    }
+
+    public void addResponseHeader(HttpResponseHeader responseHeader) {
+        responseHeaders.add(responseHeader);
     }
 
     public void setResponseHeaders(List<HttpResponseHeader> responseHeaders) {

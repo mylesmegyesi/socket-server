@@ -1,0 +1,61 @@
+html {
+  font-size: 20px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+body {
+  background-color:#FFFFFF;
+  color:#7D7D7D;
+  font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+  line-height: 1.2;
+  margin-left: 15%;
+  margin-right: 15%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+/*  font-family:Verdana, sans-serif;*/
+}
+
+h1 {
+  color:#348B93;
+  font-size:5.063em;
+  font-weight: bold;
+  font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, sans-serif;
+}
+
+h2 {
+  color:#4A585A;
+  font-size:2.25em;
+}
+
+h3 {
+  color:#656568;
+  font-size:1.5em;
+}
+
+select, input, button, textarea {
+  font-size:0.7em;
+}
+
+ul {  
+}
+
+li {
+  
+}
+
+dt { 
+  float:left;
+  width:10em;
+}
+
+a:link, a:visited, a:hover, a:focus, a:active {
+  color:#7D7D7D;
+}
+
+p {
+  
+}
+

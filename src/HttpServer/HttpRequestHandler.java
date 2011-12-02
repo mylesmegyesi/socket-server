@@ -1,5 +1,7 @@
 package HttpServer;
 
+import HttpServer.Exceptions.ResponseException;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -16,15 +18,11 @@ public abstract class HttpRequestHandler {
 
     public abstract boolean canHandle(HttpRequest request);
 
-    protected abstract HttpResponse getResponse(HttpRequest request, HttpServerInfo serverInfo) throws Exception;
+    protected abstract HttpResponse getResponse(HttpRequest request, HttpServerInfo serverInfo) throws ResponseException;
 
-    public void handle(Socket socket, HttpRequest request, HttpServerInfo serverInfo) {
-        String respondWith = null;
-        try {
-            respondWith = this.getResponse(request, serverInfo).getResponseString();
-        } catch (Exception e) {
-        }
-        this.logger.info("Responding with: " + respondWith);
+    public void handle(Socket socket, HttpRequest request, HttpServerInfo serverInfo) throws ResponseException {
+        HttpResponse response = this.getResponse(request, serverInfo);
+        String respondWith = response.getResponseString();
         PrintWriter out = null;
         try {
             out = new PrintWriter(socket.getOutputStream());

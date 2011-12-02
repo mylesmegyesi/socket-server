@@ -2,6 +2,7 @@ package HttpServer;
 
 
 import HttpServer.Exceptions.BadRequestException;
+import HttpServer.Exceptions.ResponseException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +33,6 @@ public class HttpRequestDispatcher implements Runnable {
     }
 
     public void run() {
-        this.logger.info(String.format("Received request from %s:%d", this.socket.getInetAddress(), this.socket.getLocalPort()));
         InputStream inputStream;
         try {
             inputStream = this.socket.getInputStream();
@@ -45,20 +45,34 @@ public class HttpRequestDispatcher implements Runnable {
             request = this.requestParser.parse(inputStream);
         } catch (BadRequestException e) {
             this.logger.severe(String.format("Unable to parse request. %s %s", "\n", e.getMessage()));
-            defaultHandler.handle(socket, request, this.serverInfo);
+            try {
+                defaultHandler.handle(socket, request, this.serverInfo);
+            } catch (ResponseException e1) {
+                this.logger.severe(String.format("Unable to generate not found response: %s", e1.getMessage()));
+            }
             return;
         }
+
+        this.logger.info(String.format("Received %s %s from %s:%d", request.getAction(), request.getRequestUri(), this.socket.getInetAddress(), this.socket.getLocalPort()));
         boolean handled = false;
         for (HttpRequestHandler requestHandler : this.requestHandlers) {
             if (requestHandler.canHandle(request)) {
-                this.logger.info(String.format("Request is being handled by %s", requestHandler.getClass()));
-                requestHandler.handle(socket, request, this.serverInfo);
+                try {
+                    requestHandler.handle(socket, request, this.serverInfo);
+                } catch (ResponseException e) {
+                    this.logger.severe(String.format("%s failed to generate response: %s", requestHandler.getClass().getName(), e.getMessage()));
+                    continue;
+                }
                 handled = true;
             }
         }
         if (!handled) {
             this.logger.info("Suitable handler not found, calling default handler.");
-            defaultHandler.handle(socket, request, this.serverInfo);
+            try {
+                defaultHandler.handle(socket, request, this.serverInfo);
+            } catch (ResponseException e) {
+                this.logger.severe(String.format("Unable to generate not found response: %s", e.getMessage()));
+            }
         }
     }
 
