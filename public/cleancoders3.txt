@@ -1,9 +1,0 @@
-The Clean Coder (3)
-
-I finished reading The Clean Coder last night. Here's the last few nuggets I gained from it.
-
-Apprentices, Journeymen, and Masters
-
-In the last chapter of the book, Uncle Bob explains what it means to be each of these. To be an apprentice is to be, essentially, a learner. As an apprentice you have little autonomy. You are learning from the Journeymen. The Journeymen have already been vetted. They are competent and skilled. They are working to become a master of their craft and are learning from the Masters. The Masters are the leaders, the captain of the ship. They are experienced and skilled, and have the scars to prove it. They know software, but are still learning.
-
-It has been cool to see how this ideology works itself out at 8th Light. As an apprentice I am being mentored by a Craftsmen and being vetted. I have little autonomy and I am trying to learn as much as possible. There is no official between "Journeyman" and "Master" at 8th Light, but among the Craftsman there is a culture of continual learning, from the outside and from each other. And of course, we are all still learning from our Master Craftsman, Uncle Bob. Nonetheless, I am extremely grateful to be a part of this culture of learning. It is the only way to become a master of your craft. 
