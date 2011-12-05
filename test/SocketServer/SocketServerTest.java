@@ -24,7 +24,7 @@ public class SocketServerTest {
     @org.junit.Before
     public void setUp() throws Exception {
         Logger logger = Logging.getLoggerAndSetLevel(SocketServerTest.class.getName(), Level.SEVERE);
-        socketServer = new SocketServer(8080, new RequestHandlerFactoryMock(logger), logger);
+        socketServer = new SocketServer(8080, new RequestHandlerFactoryMock(), logger);
     }
 
     @org.junit.After
@@ -61,7 +61,7 @@ public class SocketServerTest {
         socketServer.startListeningInBackground();
         sendRequest(socketServer.getPort());
         socketServer.stopListening();
-        assertEquals("The dispatcher was not called.", 1, RequestHandlerMock.getCalledCount());
+        assertEquals("The handler was not called.", 1, RequestHandlerMock.getCalledCount());
     }
 
     @org.junit.Test
@@ -69,7 +69,7 @@ public class SocketServerTest {
         socketServer.startListeningInBackground();
         socketServer.stopListening();
         sendRequest(socketServer.getPort());
-        assertEquals("The dispatcher was called.", 0, RequestHandlerMock.getCalledCount());
+        assertEquals("The handler was called.", 0, RequestHandlerMock.getCalledCount());
     }
 
     private boolean isPortAvailable(int port) {
@@ -77,7 +77,7 @@ public class SocketServerTest {
         boolean ret = false;
         try {
             ss = new ServerSocket();
-            ss.bind(new InetSocketAddress("localhost", port));
+            ss.bind(new InetSocketAddress("0.0.0.0", port));
             ret = ss.isBound();
         } catch (IOException e) {
         } finally {

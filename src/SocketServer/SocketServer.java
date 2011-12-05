@@ -47,6 +47,7 @@ public class SocketServer {
     }
 
     private void initialize() throws IOException {
+        Runtime.getRuntime().addShutdownHook(new SocketServerShutdownHandler(this));
         try {
             this.serverSocket = createServerSocket(this.port);
             this.logger.info(String.format("SocketServer listening at %s", this.serverSocket.getLocalSocketAddress()));
@@ -58,7 +59,7 @@ public class SocketServer {
 
     private ServerSocket createServerSocket(int port) throws IOException {
         ServerSocket serverSocket = new ServerSocket();
-        serverSocket.bind(new InetSocketAddress("localhost", port));
+        serverSocket.bind(new InetSocketAddress("0.0.0.0", port));
         serverSocket.setReuseAddress(true);
         return serverSocket;
     }
@@ -92,6 +93,9 @@ public class SocketServer {
 
     public void stopListening() {
         synchronized (this.startUpShutdownLock) {
+            if (!this.portIsBound()) {
+                 return;
+            }
             this.logger.info("SocketServer is shutting down.");
             try {
                 if (this.serverSocket != null) {

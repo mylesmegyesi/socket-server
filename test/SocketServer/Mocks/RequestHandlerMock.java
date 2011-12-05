@@ -1,9 +1,5 @@
 package SocketServer.Mocks;
 
-import SocketServer.RequestHandler;
-import SocketServer.RequestParser;
-import SocketServer.Responder;
-
 import java.net.Socket;
 import java.util.List;
 import java.util.logging.Logger;
@@ -11,11 +7,8 @@ import java.util.logging.Logger;
 /**
  * Author: Myles Megyesi
  */
-public class RequestHandlerMock extends RequestHandler {
+public class RequestHandlerMock implements Runnable {
 
-    public RequestHandlerMock(Socket socket, RequestParser requestParser, List<Responder> responders, Logger logger) {
-        super(socket, requestParser, responders, logger);
-    }
 
     public static int getCalledCount() {
         return calledCount;
@@ -27,7 +20,6 @@ public class RequestHandlerMock extends RequestHandler {
 
     private static int calledCount = 0;
 
-    @Override
     public void run() {
         calledCount++;
     }
