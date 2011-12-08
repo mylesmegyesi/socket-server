@@ -1,118 +1,78 @@
 package SocketServer;
 
-import SocketServer.Mocks.RequestHandlerFactoryMock;
-import SocketServer.Mocks.RequestHandlerMock;
-import SocketServer.Utility.Logging;
+import SocketServer.Mocks.RequestDispatcherFactoryMock;
+import SocketServer.Mocks.ShutDownHandlerMock;
+import SocketServer.Mocks.SocketListenerMock;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * Author: Myles Megyesi
  */
 public class SocketServerTest {
 
-    SocketServer socketServer = null;
+    SocketServer socketServer;
+    ShutDownHandlerMock shutDownHandlerMock;
+    SocketListenerMock socketListenerMock;
+    int port = 8080;
+    RequestDispatcherFactory requestDispatcherFactory;
 
-    @org.junit.Before
+
+    @Before
     public void setUp() throws Exception {
-        Logger logger = Logging.getLoggerAndSetLevel(SocketServerTest.class.getName(), Level.SEVERE);
-        socketServer = new SocketServer(8080, new RequestHandlerFactoryMock(), logger);
+        this.requestDispatcherFactory = new RequestDispatcherFactoryMock();
+        this.shutDownHandlerMock = new ShutDownHandlerMock(null, null);
+        this.socketListenerMock = new SocketListenerMock(this.port, new RequestDispatcherFactoryMock(), false);
+        this.socketServer = new SocketServer(this.shutDownHandlerMock, this.socketListenerMock);
     }
 
-    @org.junit.After
+    @After
     public void tearDown() throws Exception {
-        socketServer.stopListening();
-        RequestHandlerMock.resetCalledCount();
-        socketServer = null;
+        this.requestDispatcherFactory = null;
+        this.shutDownHandlerMock = null;
+        this.socketListenerMock = null;
+        this.socketServer = null;
     }
 
-    @org.junit.Test
-    public void stopDoesNotThrowAnExceptionIfCalledBeforeStart() throws Exception {
-        try {
-            socketServer.stopListening();
-        } catch (Exception e) {
-            fail("Stopping the SocketServer before starting the SocketServer threw an exception");
-        }
+    @Test
+    public void initCorrectly() throws Exception {
+        SocketServer socketServer = new SocketServer(this.port, this.requestDispatcherFactory);
+        assertEquals(this.port, socketServer.socketListener.socket.port);
+        assertEquals(this.requestDispatcherFactory, socketServer.socketListener.requestDispatcherFactory);
+        assertEquals(socketServer, socketServer.shutDownHandler.socketServer);
     }
 
-    @org.junit.Test
-    public void serverPortIsTakenAfterStartingTheServer() throws Exception {
-        socketServer.startListeningInBackground();
-        assertFalse("The port " + socketServer.getPort() + " is available when it should not be.", isPortAvailable(socketServer.getPort()));
+    @Test
+    public void addsTheShutdownHandler() throws Exception {
+        this.socketServer.start();
+        assertEquals(1, this.shutDownHandlerMock.addCalledCount);
     }
 
-    @org.junit.Test
-    public void serverPortIsAvailableAfterTheServerIsStopped() throws Exception {
-        socketServer.startListeningInBackground();
-        socketServer.stopListening();
-        assertTrue("The port " + socketServer.getPort() + " is not available when it should be.", isPortAvailable(socketServer.getPort()));
+    @Test
+    public void startsTheSocketListener() throws Exception {
+        this.socketServer.start();
+        assertEquals(1, this.socketListenerMock.startCalledCount);
     }
 
-    @org.junit.Test
-    public void serverCallsTheDispatcherAfterReceivingARequest() throws Exception {
-        socketServer.startListeningInBackground();
-        sendRequest(socketServer.getPort());
-        socketServer.stopListening();
-        assertEquals("The handler was not called.", 1, RequestHandlerMock.getCalledCount());
+    @Test
+    public void removesTheShutdownHandler() throws Exception {
+        this.socketServer.stop();
+        assertEquals(1, this.shutDownHandlerMock.removeCalledCount);
     }
 
-    @org.junit.Test
-    public void serverDoesNotCallTheDispatcherAfterStopping() throws Exception {
-        socketServer.startListeningInBackground();
-        socketServer.stopListening();
-        sendRequest(socketServer.getPort());
-        assertEquals("The handler was called.", 0, RequestHandlerMock.getCalledCount());
+    @Test
+    public void removesTheSocketListener() throws Exception {
+        this.socketServer.stop();
+        assertEquals(1, this.socketListenerMock.stopListeningCalledCount);
     }
 
-    private boolean isPortAvailable(int port) {
-        ServerSocket ss = null;
-        boolean ret = false;
-        try {
-            ss = new ServerSocket();
-            ss.bind(new InetSocketAddress("0.0.0.0", port));
-            ret = ss.isBound();
-        } catch (IOException e) {
-        } finally {
-            try {
-                if (ss != null) {
-                    ss.close();
-                }
-            } catch (IOException e) {
-            }
-        }
-        return ret;
-    }
-
-    private void sendRequest(int port) {
-        Socket socket = null;
-        OutputStream out = null;
-        try {
-            socket = new Socket();
-            socket.connect(new InetSocketAddress("localhost", port), 100);
-            out = socket.getOutputStream();
-            out.write("message".getBytes());
-        } catch (IOException e) {
-        } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                }
-            }
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e1) {
-                }
-            }
-        }
+    @Test
+    public void stopCatchesAnInterruptException() throws Exception {
+        this.socketListenerMock.stopListeningThrows = true;
+        this.socketServer.stop();
+        assertEquals(1, this.shutDownHandlerMock.removeCalledCount);
     }
 }
